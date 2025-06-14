@@ -8,6 +8,7 @@ import { selectIsSubmitting } from '../../../store/reducer';
 import { Observable } from 'rxjs';
 import { AuthStateInterface } from '../../../types/authState.interface';
 import { AsyncPipe } from '@angular/common';
+import { AuthService } from '../../../services/auth.services';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +22,7 @@ export class RegisterComponent {
 
   public isSubmitting$: Observable<boolean>;
   
-  constructor(private fb: FormBuilder, private store: Store<{ auth: AuthStateInterface }>) {
+  constructor(private fb: FormBuilder, private store: Store<{ auth: AuthStateInterface }>, private authService: AuthService) {
     this.form = this.fb.nonNullable.group({
       username: ['', Validators.required],
       email: ['', Validators.required],
@@ -35,7 +36,10 @@ export class RegisterComponent {
     console.log('form', this.form.getRawValue());
     const request: RegisterRequestInterface = {
       user: this.form.getRawValue(),
-    }
-    this.store.dispatch(register({ request }))
+    };
+
+    this.store.dispatch(register({ request }));
+    // For testing only. Replace this w/ a dispatch.
+    this.authService.register(request).subscribe(res => console.log('res', res));
   }
 }
